@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Cultivar Prediction</title>
+    <!-- Playfair Display for headers (Elegant/Classical) and Lato for body -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Palette: Merlot, Gold, and Warm White */
+            --primary: #881337;
+            /* Rose 900 - Deep Burgundy */
+            --primary-light: #be123c;
+            /* Rose 700 */
+            --accent: #d97706;
+            /* Amber 600 - Gold */
+            --bg-color: #fafaf9;
+            /* Stone 50 */
+            --card-bg: #ffffff;
+            --text-main: #44403c;
+            /* Stone 700 */
+            --text-light: #78716c;
+            /* Stone 500 */
+            --border-color: #e7e5e4;
+            /* Stone 200 */
+            --radius: 4px;
+            /* More classic/sharp radius */
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#f5f5f4 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.75rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-style: italic;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border-top: 4px solid var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-family: 'Lato', sans-serif;
+            color: var(--text-main);
+            background-color: #fff;
+            box-sizing: border-box;
+            /* Fix width issues */
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(136, 19, 55, 0.1);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            /* Elegant pill shape */
+            font-size: 1.1rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            /* Bold */
+            font-style: italic;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: block;
+            margin: 0 auto;
+            min-width: 250px;
+            box-shadow: 0 10px 15px -3px rgba(136, 19, 55, 0.3);
+        }
+
+        button:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        /* Result Section */
+        .result-card {
+            background: radial-gradient(circle at top right, #fff1f2, #fff);
+            text-align: center;
+        }
+
+        .result-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin: 1rem 0;
+            font-weight: 700;
+        }
+
+        /* Errors */
+        .error-card {
+            background-color: #fef2f2;
+            border-left: 4px solid #dc2626;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+        }
+
+        .error-title {
+            color: #991b1b;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-list {
+            color: #b91c1c;
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        /* EDA Section */
+        .eda-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .eda-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .eda-item {
+            text-align: center;
+        }
+
+        .eda-item p {
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .eda-item img {
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            background: #fff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .eda-item img:hover {
+            transform: scale(1.02);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Wine Cultivar Classification</h1>
+            <p class="subtitle">
+                An advanced SVM model for determining provenance based on chemical composition.
+            </p>
+        </header>
+
+        {% if errors %}
+        <div class="error-card">
+            <div class="error-title">Submission Error</div>
+            <ul class="error-list">
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- INPUT FORM -->
+        <div class="card">
+            <h3>Chemical Analysis</h3>
+            <form method="POST" action="/predict">
+                <div class="grid">
+                    {% for feature in features %}
+                    <div>
+                        <label for="{{ feature }}">{{ feature.replace('_', ' ') }}</label>
+                        <input type="number" step="any" name="{{ feature }}" id="{{ feature }}" placeholder="0.0"
+                            required>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="submit">Identify Cultivar</button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="card result-card">
+            <h3>Analysis Result</h3>
+            <div class="result-value">
+                🍇 {{ cultivar }}
+            </div>
+            <p style="color: var(--text-light);">
+                The Support Vector Machine (SVM) model has classified this sample based on the provided features.
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- EDA SECTION -->
+        <div class="card">
+            <h3>Dataset Insights</h3>
+            <p style="margin-bottom: 2rem; color: var(--text-main);">
+                Visualizations derived from the UCI Wine dataset (178 samples, 3 classes).
+            </p>
+            <div class="eda-grid">
+                <div class="eda-item">
+                    <p>Alcohol vs Flavanoids</p>
+                    <img src="{{ eda_scatter }}" alt="Alcohol vs Flavanoids Scatter Plot">
+                </div>
+                <div class="eda-item">
+                    <p>Class Distribution</p>
+                    <img src="{{ class_dist }}" alt="Class Distribution Bar Chart">
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Covenant University CSC415 Project • Built with FastAPI, Scikit-learn & Seaborn
+        </footer>
+    </div>
+</body>
+
+</html>
