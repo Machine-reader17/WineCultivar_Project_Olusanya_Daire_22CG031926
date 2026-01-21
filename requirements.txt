@@ -7,4 +7,5 @@ pandas
 scikit-learn
 joblib
 matplotlib
+gunicorn==21.2.0
 seaborn
